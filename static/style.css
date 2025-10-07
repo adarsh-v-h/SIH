@@ -1,0 +1,294 @@
+/* style.css — cleaned & consolidated
+   Keep IDs/classes unchanged. Only presentation changes. */
+
+/* =========================
+   Theme variables & base
+   ========================= */
+:root{
+  --bg-page: #f4f6fb;
+  --page-grad-a: #6f59f7;
+  --page-grad-b: #8e55d8;
+  --accent: #5b4af7;
+  --accent-2: #8a3ff0;
+  --accent-3: #6b4df6;
+  --muted: #7b7f88;
+  --panel: #ffffff;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --elev-1: 0 8px 30px rgba(20,22,50,0.08);
+  --elev-2: 0 12px 40px rgba(18,21,60,0.10);
+  --card-border: rgba(99,79,255,0.06);
+  --max-shell-width: 1200px;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Reset & page */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(120deg,var(--page-grad-a),var(--page-grad-b));color:#202224;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* =========================
+   App shell & header
+   ========================= */
+.app-shell{
+  max-width:var(--max-shell-width);
+  margin:28px auto;
+  background:var(--bg-page);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 30px 80px rgba(12,18,55,0.18);
+  border:1px solid rgba(255,255,255,0.4);
+}
+
+.topbar{
+  padding:20px 34px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+  border-bottom:1px solid rgba(15,16,40,0.02);
+}
+.brand h1{margin:0;font-size:20px;color:#201f2f;font-weight:800}
+.brand .tag{color:var(--muted);font-size:13px;margin-top:6px}
+
+.session{display:flex;gap:12px;align-items:center}
+.session span{font-weight:600;color:#222}
+.btn{border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
+.btn.ghost{background:transparent;color:#333;border:1px solid rgba(0,0,0,0.06)}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 10px 28px rgba(91,74,247,0.12)}
+.btn.outline{background:transparent;border:1px solid rgba(88,63,245,0.12);color:var(--accent)}
+
+/* =========================
+   Layout grid
+   ========================= */
+.main-grid{display:grid;grid-template-columns:84px 1fr;gap:28px;padding:28px;align-items:start}
+
+/* Left column (login panel / brand bar)
+   — shows as full login card when body.login-active is present,
+   — collapses to a slim brand bar when logged in (body:not(.login-active)). */
+#loginPanel{
+  background:linear-gradient(180deg, rgba(111,89,247,0.08), rgba(138,63,240,0.06));
+  border-radius:12px;
+  padding:18px;
+  min-height:520px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  position:relative;
+  overflow:visible;
+}
+
+/* loginDiv: the inner card used by login form (kept intact) */
+#loginDiv{
+  width:100%;
+  max-width:380px;
+  background:linear-gradient(180deg,#ffffff,#fbfbff);
+  padding:26px;
+  border-radius:14px;
+  box-shadow:var(--elev-1);
+  border:1px solid var(--card-border);
+}
+
+/* When the page is in login-active mode (initial login view),
+   center the whole grid in the viewport so the login card is centered. */
+body.login-active .main-grid{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:0;
+}
+body.login-active #loginPanel{
+  width:100%;
+  max-width:420px;
+  margin:0 auto;
+  background:#fff;
+  padding:32px;
+  box-shadow:0 20px 48px rgba(22,28,70,0.15);
+  border-radius:18px;
+}
+/* hide dashboard while login active */
+body.login-active #dashboardDiv{display:none !important}
+
+/* when logged in, collapse left column to slim brand sidebar */
+body:not(.login-active) #loginPanel{
+  width:84px;
+  min-width:84px;
+  padding:20px 10px;
+  border-radius:12px;
+  background:linear-gradient(180deg,var(--page-grad-a),var(--page-grad-b));
+  box-shadow:none;
+  overflow:hidden;
+}
+body:not(.login-active) #loginDiv{display:none !important}
+
+/* ensure session area hidden on login screen */
+body.login-active .session{display:none !important}
+body:not(.login-active) .session{display:flex;gap:12px;align-items:center}
+
+/* workspace area */
+.workspace{min-height:520px;padding:0;background:transparent;border-radius:14px}
+
+/* =========================
+   Dashboard & cards
+   ========================= */
+#dashboardDiv{padding:22px 30px;background:transparent;min-height:100vh}
+.dashboard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px}
+.title{font-size:26px;color:var(--accent-3);margin:0;font-weight:800}
+
+/* segment buttons */
+.controls .seg-btn{background:linear-gradient(90deg,#3f63ff,#6b59f8);padding:10px 14px;border-radius:12px;color:#fff;border:0;font-weight:700;box-shadow:0 10px 28px rgba(103,84,254,0.12)}
+
+/* cards grid - flexible: main column grows, right column min/max sized*/
+.cards-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,420px);gap:22px;align-items:start}
+@media (max-width:1000px){.cards-grid{grid-template-columns:1fr}}
+
+/* card styles */
+.card{background:linear-gradient(180deg,#ffffff,#fbfbff);border-radius:14px;padding:18px;border:1px solid rgba(10,10,20,0.03);box-shadow:var(--elev-1)}
+.card-title{margin:0 0 10px;color:#4a1f9b;font-size:18px}
+
+/* subcard */
+.subcard{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(250,250,255,0.9), rgba(255,255,255,0.96));margin-bottom:12px;border:1px solid rgba(100,90,240,0.03)}
+
+/* lists & placeholders */
+.list-area,.assignments-area,.list-muted{min-height:48px;padding:6px 4px}
+.empty-note{color:var(--muted);padding:8px 6px;font-style:italic;background:transparent;border-radius:8px;min-height:64px;display:flex;align-items:center}
+
+/* submission / upload blocks */
+.submission,#submittedAssignmentsDiv,#assignmentsListStudent{min-height:70px;border-radius:10px;padding:10px;background:linear-gradient(180deg,#fff,#fbfbff);border:1px solid rgba(240,240,255,0.6);box-shadow:0 8px 28px rgba(20,20,50,0.04);margin-bottom:10px}
+
+/* forms in cards */
+.form-row{display:flex;flex-direction:row;gap:10px;align-items:center}
+.form-row .input{flex:1}
+.input, .input-file, textarea.input{padding:12px 14px;border-radius:10px;border:1px solid rgba(16,18,30,0.06);background:#fff;font-size:14px;color:#222;transition:box-shadow .15s ease,border-color .12s ease}
+.input:focus,textarea.input:focus{outline:none;border-color:rgba(107,77,246,0.18);box-shadow:0 10px 30px rgba(99,79,255,0.08)}
+
+.input-file{border-radius:10px;padding:10px 12px}
+
+/* assignments area */
+.submission{padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfbff);border:1px solid rgba(240,240,255,0.6);box-shadow:0 8px 28px rgba(20,20,50,0.04)}
+
+/* lists */
+.list-muted{padding-left:18px;margin:8px 0;color:#333;font-weight:600}
+.list-muted li{margin:8px 0;color:#3a335b}
+
+/* placeholders & helpers */
+.cert-type{margin-top:6px;color:#4a3bb2;font-weight:700;font-size:13px}
+.status-approved{color:#0b8a3c;font-weight:700}
+.status-pending{color:#ff8c00;font-weight:700}
+.status-rejected{color:#d23;font-weight:700}
+
+/* buttons */
+.btn.primary{background:linear-gradient(90deg,var(--accent-3),#8a3ff0);color:#fff;box-shadow:0 12px 36px rgba(106,78,244,0.14);padding:10px 16px;border-radius:12px}
+.btn.outline{background:transparent;border:1px solid rgba(99,79,255,0.12);color:var(--accent-3);padding:10px 14px;border-radius:12px}
+.btn.ghost{background:transparent;color:#222;border:1px solid rgba(0,0,0,0.06)}
+.btn:hover{transform:translateY(-3px)}
+.btn:active{transform:translateY(0);box-shadow:none}
+
+/* dashboard-section visual (keeps old class) */
+.dashboard-section{background:#fff;border-radius:14px;padding:20px;box-shadow:0 6px 20px rgba(20,20,40,0.08);margin-bottom:20px;animation:fadeIn .28s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* small utilities */
+.hidden{display:none}
+.error{color:#e63946;font-size:13px;margin-top:8px}
+
+/* responsive adjustments */
+@media (max-width:900px){
+  .main-grid{grid-template-columns:1fr;padding:16px}
+  #loginPanel{display:block;width:100%;min-height:auto}
+  .cards-grid{grid-template-columns:1fr}
+  .title{font-size:22px}
+}
+
+/* keep the login inner card focus states slightly stronger */
+#loginDiv .input:focus{box-shadow:0 10px 30px rgba(99,79,255,0.10)}
+
+/* keep file input hint small */
+.small-muted{font-size:12px;color:var(--muted)}
+
+/* make long filenames wrap safely within cards */
+.submission a, .submission strong, .submission { word-break: break-word; white-space:normal }
+
+/* ensure main card does not grow forever */
+.cards-grid > .card:first-child{max-width:920px}
+
+/* === LOGIN FORM FIX === */
+#loginDiv .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+#loginDiv label {
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+#loginDiv input, 
+#loginDiv select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+#loginDiv button {
+  margin-top: 10px;
+}
+
+/* === FIX EMPTY RIGHT GAP === */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;   /* single column by default */
+  gap: 20px;
+  justify-content: center;
+}
+.cards-grid > .card {
+  max-width: 850px;   /* prevent overly wide lines */
+  margin: 0 auto;
+}
+
+/* === SUBMISSION SECTION STYLE === */
+#submittedAssignmentsDiv, 
+#assignmentsListStudent {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+#submittedAssignmentsDiv em, 
+#assignmentsListStudent em {
+  color: #666;
+  font-style: italic;
+}
+
+/* === FACULTY INPUT LAYOUT === */
+#manageMarksSection, #manageAssignmentsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+#manageMarksSection input, 
+#manageAssignmentsSection input, 
+#manageAssignmentsSection textarea {
+  max-width: 250px;
+}
+#manageMarksSection .input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;    /* ✅ allows inputs to break to new lines */
+  gap: 12px;          /* ✅ consistent spacing between items */
+  align-items: center;
+}
+.form-row .input {
+  flex: 1;            /* ✅ inputs expand but also shrink on smaller screens */
+  min-width: 160px;   /* ✅ prevents inputs from becoming too tiny */
+}
+
+/* end of stylesheet */

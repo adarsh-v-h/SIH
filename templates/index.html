@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Student Hub</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Smart Student Hub</h1>  
+        <p class="tag">Academic + Non-Academic workflow</p>
+      </div>
+      <div class="session">
+        <span id="welcomeMsg">Welcome</span>
+        <button class="btn ghost" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <!-- Left column: Login / Controls -->
+      <aside class="panel" id="loginPanel">
+        <div id="loginDiv">
+          <h2 class="section-title">Sign In / Create</h2>
+
+          <label for="roleSelect" class="label">Role</label>
+          <select id="roleSelect" class="input">
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+          </select>
+
+          <label for="usernameInput" class="label">Username</label>
+          <input id="usernameInput" class="input" type="text" placeholder="Enter username">
+
+          <label for="emailInput" class="label hidden">Email</label>
+          <input id="emailInput" class="input hidden" type="email" placeholder="Enter your email">
+
+          <label for="passwordInput" class="label">Password</label>
+          <input id="passwordInput" class="input" type="password" placeholder="Password">
+
+          <label for="confirmPasswordInput" class="label hidden">Confirm</label>
+          <input id="confirmPasswordInput" class="input hidden" type="password" placeholder="Confirm Password">
+
+          <div class="row" style="gap:8px; margin-top:12px;">
+            <button id="loginBtn" class="btn primary" onclick="login()">Login</button>
+            <button id="createAccountBtn" class="btn outline" onclick="showCreateAccountForm()">Create</button>
+            <button id="submitCreateBtn" class="btn primary hidden" onclick="createAccount()">Submit</button>
+            <button id="cancelCreateBtn" class="btn ghost hidden" onclick="cancelCreateAccount()">Cancel</button>
+          </div>
+
+          <p id="loginError" class="error"></p>
+        </div>
+      </aside>
+
+      <!-- Right column: Dashboard -->
+      <section class="workspace panel hidden" id="dashboardDiv">
+        <!-- ROLE-SPECIFIC DASHBOARDS -->
+        <div id="studentDashboard" class="dashboard hidden">
+          <div class="dashboard-head">
+            <h2 class="title">Student Dashboard</h2>
+            <div class="controls">
+              <button class="seg-btn" onclick="showStudentSection('academics')">Academics</button>
+              <button class="seg-btn" onclick="showStudentSection('non-academics')">Non-Academics</button>
+            </div>
+          </div>
+
+          <div class="cards-grid">
+            <div id="studentAcademicsSection" class="card dashboard-section hidden">
+              <h3 class="card-title">My Academics</h3>
+
+              <div class="subcard">
+                <h4 class="sub-title">Attendance</h4>
+                <div id="attendanceDisplay" class="muted">—</div>
+              </div>
+
+              <div class="subcard">
+                <h4 class="sub-title">Marks</h4>
+                <ul id="marksList" class="list-muted">
+                  <!-- JS will populate; shows fallback text if empty -->
+                </ul>
+                <div id="marksPlaceholder" class="empty-note">No marks yet.</div>
+              </div>
+
+              <div class="subcard">
+                <h4 class="sub-title">Assignments</h4>
+                <div id="assignmentsListStudent" class="assignments-area">
+                  <!-- assignment cards or "no assignment" placeholder inserted by script -->
+                </div>
+                <div id="assignmentsPlaceholder" class="empty-note">No assignments assigned yet.</div>
+              </div>
+            </div>
+
+            <div id="studentNonAcademicsSection" class="card dashboard-section hidden">
+              <h3 class="card-title">Non-Academics</h3>
+
+              <div class="subcard">
+                <h4 class="sub-title">Certificates & Documents</h4>
+                <div class="row" style="align-items:center;">
+                  <input id="certificateFileInput" type="file" class="input-file" />
+                  <button class="btn primary" onclick="uploadCertificate()">Upload</button>
+                </div>
+                <div id="studentCertificatesList" class="list-area">
+                  <!-- uploads will render here -->
+                </div>
+                <div id="studentCertsPlaceholder" class="empty-note">No documents uploaded.</div>
+              </div>
+
+              <div class="subcard">
+                <h4 class="sub-title">My Submissions</h4>
+                <!-- keep assignments list duplicated for student non-academic view -->
+                <div id="assignmentsSectionStudent">
+                  <div id="assignmentsListStudent" class="assignments-area"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="facultyDashboard" class="dashboard hidden">
+          <div class="dashboard-head">
+            <h2 class="title">Faculty Dashboard</h2>
+            <div class="controls">
+              <button class="seg-btn" onclick="showFacultySection('manage-assignments')">Assignments</button>
+              <button class="seg-btn" onclick="showFacultySection('academics')">Academics</button>
+              <button class="seg-btn" onclick="showFacultySection('non-academics')">Certificates</button>
+            </div>
+          </div>
+
+          <div class="cards-grid">
+            <div id="manageassignmentsSection" class="card dashboard-section hidden">
+              <h3 class="card-title">Assignments Management</h3>
+              <div class="form-row">
+                <input id="assignmentNameInput" class="input" placeholder="Assignment name" />
+                <textarea id="assignmentDetailsInput" class="input" placeholder="Details"></textarea>
+                <button class="btn primary" onclick="createAssignment()">Create</button>
+              </div>
+              <h4 class="sub-title">Submitted</h4>
+              <div id="submittedAssignmentsDiv" class="list-area"></div>
+              <div id="submittedAssignmentsPlaceholder" class="empty-note">No submissions yet.</div>
+            </div>
+
+            <div id="academicsSection" class="card dashboard-section hidden">
+              <h3 class="card-title">Marks & Attendance</h3>
+              <div class="form-row">
+                <input id="markStudentInput" class="input" placeholder="student username" />
+                <input id="markSubjectInput" class="input" placeholder="subject" />
+                <input id="markValueInput" class="input" type="number" placeholder="marks" />
+                <button class="btn primary" onclick="updateMarks()">Save Marks</button>
+              </div>
+
+              <div class="form-row" style="margin-top:12px;">
+                <input id="attStudentInput" class="input" placeholder="student username" />
+                <input id="attTotalInput" class="input" placeholder="total days" type="number" />
+                <input id="attAttendedInput" class="input" placeholder="attended days" type="number" />
+                <button class="btn outline" onclick="updateAttendanceByFaculty()">Update Attendance</button>
+              </div>
+            </div>
+
+            <div id="nonacademicsSection" class="card dashboard-section hidden">
+              <h3 class="card-title">Certificates (pending)</h3>
+              <div id="facultyCertificatesList" class="list-area"></div>
+              <div id="facultyCertsPlaceholder" class="empty-note">No pending certificates.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <small>Prototype — not for production. Use secure auth & role checks before launch.</small>
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
